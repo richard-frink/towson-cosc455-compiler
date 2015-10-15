@@ -1,6 +1,10 @@
 
 package edu.towson.cs.rsussa1.compiler_implementation;
 
+import java.awt.color.CMMException;
+
+import edu.towson.cosc.cosc455.interfaces.CompilerException;
+
 /**
  * COSC 455 Programming Languages: Implementation and Design.
  *
@@ -18,7 +22,7 @@ public interface SyntaxAnalyzer {
 	 * This method implements the BNF grammar rule for the document annotation.
 	 * @throws CompilerException
 	 */
-	void markdown() throws CompilerException;
+	void markdown() throws CMMException;
 
 	/**
 	 * This method implements the BNF grammar rule for the head annotation.
@@ -85,7 +89,7 @@ public interface SyntaxAnalyzer {
 	 * This method implements the BNF grammar rule for the inner-item annotation.
 	 * @throws CompilerException
 	 */
-	void innerItem() throws CompilerException;
+	void innerItem() throws CMMException;
 
 	/**
 	 * This method implements the BNF grammar rule for the link annotation.
@@ -109,6 +113,6 @@ public interface SyntaxAnalyzer {
 	* This method implements the BNF grammar rule for the newline annotation.
 	* @throws CompilerException
 	*/
-	void newline() throws CompilerException;
+	void newline() throws CMMException;
 	
 }
