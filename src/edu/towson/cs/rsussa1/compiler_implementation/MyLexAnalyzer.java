@@ -1,6 +1,6 @@
 package edu.towson.cs.rsussa1.compiler_implementation;
 
-/*
+/**
  * COSC455 - Programming Languages and Implementation
  * 
  * Richard Sussan
@@ -11,6 +11,8 @@ import edu.towson.cosc.cosc455.interfaces.LexicalAnalyzer;
 public class MyLexAnalyzer implements LexicalAnalyzer {
 	private String nextCharacter = "";
 	private int currentPosition = 0;
+	private Token currentToken;
+	private String[] legalTokens = {"[", "]", "(", ")", "@", "%", "$DEF", "$USE", "$END"};
 	
 	@Override
 	public void getNextToken() {
@@ -25,7 +27,12 @@ public class MyLexAnalyzer implements LexicalAnalyzer {
 
 	@Override
 	public void addCharacter() {
-		// TODO Auto-generated method stub
+		if(false){ //isspace false
+			
+		}
+		else{
+			getCharacter();
+		}
 
 	}
 

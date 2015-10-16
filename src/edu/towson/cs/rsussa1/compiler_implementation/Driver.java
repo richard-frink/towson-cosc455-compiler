@@ -6,14 +6,13 @@ package edu.towson.cs.rsussa1.compiler_implementation;
  * Richard Sussan
  */
 
-public class Token {
-	public String token = "";
-	
-	public Token(String str){
-		token = str;
-	}
-	
-	public String getToken(){
-		return token;
+import java.util.*;
+
+public class Driver {
+	public static void main(String[] args){
+		Scanner scan;
+		String file = "";
+		
+		
 	}
 }
