@@ -14,7 +14,7 @@ public class MySynAnalyzer implements SyntaxAnalyzer {
 
 	@Override
 	public void markdown() throws CMMException {
-		// TODO Auto-generated method stub
+		
 
 	}
 

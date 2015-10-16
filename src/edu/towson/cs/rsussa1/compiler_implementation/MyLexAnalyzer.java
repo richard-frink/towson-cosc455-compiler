@@ -9,11 +9,12 @@ package edu.towson.cs.rsussa1.compiler_implementation;
 import edu.towson.cosc.cosc455.interfaces.LexicalAnalyzer;
 
 public class MyLexAnalyzer implements LexicalAnalyzer {
-
+	private String nextCharacter = "";
+	private int currentPosition = 0;
+	
 	@Override
 	public void getNextToken() {
-		// TODO Auto-generated method stub
-
+		
 	}
 
 	@Override
@@ -30,7 +31,9 @@ public class MyLexAnalyzer implements LexicalAnalyzer {
 
 	@Override
 	public boolean isSpace(String c) {
-		// TODO Auto-generated method stub
+		if(c.equals(" ")){
+			return true;
+		}
 		return false;
 	}
 
