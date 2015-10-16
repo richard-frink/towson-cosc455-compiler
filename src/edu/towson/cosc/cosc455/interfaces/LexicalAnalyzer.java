@@ -1,4 +1,4 @@
-package edu.towson.cs.rsussa1.compiler_implementation;
+package edu.towson.cosc.cosc455.interfaces;
 
 /**
  * COSC 455 Programming Languages: Implementation and Design.

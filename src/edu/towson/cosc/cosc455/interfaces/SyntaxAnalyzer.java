@@ -1,9 +1,9 @@
 
-package edu.towson.cs.rsussa1.compiler_implementation;
+package edu.towson.cosc.cosc455.interfaces;
 
 import java.awt.color.CMMException;
 
-import edu.towson.cosc.cosc455.interfaces.CompilerException;
+import edu.towson.cs.rsussa1.compiler_implementation.CompilerException;
 
 /**
  * COSC 455 Programming Languages: Implementation and Design.
