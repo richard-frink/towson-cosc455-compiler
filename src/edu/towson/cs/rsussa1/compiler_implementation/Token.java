@@ -7,7 +7,7 @@ package edu.towson.cs.rsussa1.compiler_implementation;
  */
 
 public class Token {
-	public String token = "";
+	public String token;
 	
 	public Token(String str){
 		token = str;

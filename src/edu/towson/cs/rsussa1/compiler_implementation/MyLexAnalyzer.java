@@ -12,7 +12,10 @@ public class MyLexAnalyzer implements LexicalAnalyzer {
 	private String nextCharacter = "";
 	private int currentPosition = 0;
 	private Token currentToken;
-	private String[] legalTokens = {"[", "]", "(", ")", "@", "%", "$DEF", "$USE", "$END"};
+	private String[] legalTokens = {};//i have defined all classes for all legal tokens
+				//still need to put together "VAR DEF, VAR USE, AUDIO LINK, VIDEO LINK, GENERAL LINK"
+				//have idea to work in an abstract parent class for all portions of all 5 major parts
+				//but have not done so yet ****as of - 10/18/2015****
 	
 	@Override
 	public void getNextToken() {

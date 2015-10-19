@@ -15,7 +15,6 @@ public class MySynAnalyzer implements SyntaxAnalyzer {
 	@Override
 	public void markdown() throws CMMException {
 		
-
 	}
 
 	@Override

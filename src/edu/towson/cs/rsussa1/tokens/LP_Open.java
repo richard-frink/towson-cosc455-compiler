@@ -8,8 +8,8 @@ package edu.towson.cs.rsussa1.tokens;
 import edu.towson.cosc.cosc455.interfaces.LegalToken;
 import edu.towson.cs.rsussa1.compiler_implementation.Token;
 
-public class LIst_Close implements LegalToken {
-	static Token t = new Token(";");
+public class LP_Open implements LegalToken {
+	static Token t = new Token("[");
 	
 	@Override
 	public boolean isLegal(String str){
@@ -23,6 +23,6 @@ public class LIst_Close implements LegalToken {
 
 	@Override
 	public String getHTML(boolean openTag) {
-		return "</li>";
+		return "";
 	}
 }
