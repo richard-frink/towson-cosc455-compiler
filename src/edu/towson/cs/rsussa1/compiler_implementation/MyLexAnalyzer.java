@@ -18,6 +18,10 @@ public class MyLexAnalyzer implements LexicalAnalyzer {
 				//have idea to work in an abstract parent class for all portions of all 5 major parts
 				//but have not done so yet ****as of - 10/18/2015****
 	
+	public MyLexAnalyzer(){
+		
+	}
+	
 	public void start(String file){
 		source = file;
 		
@@ -37,9 +41,7 @@ public class MyLexAnalyzer implements LexicalAnalyzer {
 
 	@Override
 	public void addCharacter() {
-		if(false){ //isspace false
-			
-		}
+		if(false); //isspace false
 		else{
 			getCharacter();
 		}

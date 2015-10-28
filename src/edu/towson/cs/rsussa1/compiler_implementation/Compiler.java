@@ -7,10 +7,12 @@ package edu.towson.cs.rsussa1.compiler_implementation;
  */
 
 import java.io.*;
+import java.util.Stack;
 
 public class Compiler {
-	public static Token t;
+	public static String currentToken;
 	public static MyLexAnalyzer Lexer;
+	public static Stack<String> myStack = new Stack<String>();
 	
 	public static void main(String[] args) throws IOException{
 		Lexer = new MyLexAnalyzer();
