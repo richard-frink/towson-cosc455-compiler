@@ -10,17 +10,10 @@ import edu.towson.cosc.cosc455.interfaces.LexicalAnalyzer;
 
 public class MyLexAnalyzer implements LexicalAnalyzer {
 	private String source;
+	private char[] lexeme = new char [100];
 	private char nextChar;
+	private int lexLength;
 	private int currentPosition;
-	private Token currentToken;
-	//private String[] legalTokens = {};   i have defined all classes for all legal tokens
-				//still need to put together "VAR DEF, VAR USE, AUDIO LINK, VIDEO LINK, GENERAL LINK"
-				//have idea to work in an abstract parent class for all portions of all 5 major parts
-				//but have not done so yet ****as of - 10/18/2015****
-	
-	public MyLexAnalyzer(){
-		
-	}
 	
 	public void start(String file){
 		source = file;

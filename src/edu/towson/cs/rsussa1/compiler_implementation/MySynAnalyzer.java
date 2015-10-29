@@ -15,7 +15,7 @@ import edu.towson.cosc.cosc455.interfaces.*;
 
 public class MySynAnalyzer implements SyntaxAnalyzer {
 
-	private ArrayList<LegalToken> TAGS;
+	//private ArrayList<LegalToken> TAGS;
 	protected boolean errorFound;
 	
 	public MySynAnalyzer(){
@@ -42,18 +42,51 @@ public class MySynAnalyzer implements SyntaxAnalyzer {
 		}
 		else
 			Compiler.Lexer.getNextToken();
+		if(!errorFound) variableDefine();
+		
+		
+		
+		//i need to put try catch statements into all of these things but i am leaving the errors for now
+		
+		
+		
+		if(!errorFound) head();
+		if(!errorFound) body();
+		if (!(new Hash_End()).isLegal(Compiler.currentToken)){
+			System.out.println("SYNTAX ERROR - A document end tag was expected when '" + Compiler.currentToken + "' was found.");
+			setError();
+		}
+		else
+			Compiler.Lexer.getNextToken();
 	}
 
 	@Override
 	public void head() throws CompilerException {
 		// TODO Auto-generated method stub
-
+		
+		
+		// i need to put in a line that checks if the currentToken is the possible match or if it skips the uneccesary token possibility
+		
+		
+		if (!(new Carrot()).isLegal(Compiler.currentToken)){
+			System.out.println("SYNTAX ERROR - A head tag was expected when '" + Compiler.currentToken + "' was found.");
+			setError();
+		}
+		else
+			Compiler.Lexer.getNextToken();
+		if(!errorFound) title();
+		if (!(new Carrot()).isLegal(Compiler.currentToken)){
+			System.out.println("SYNTAX ERROR - A head tag was expected when '" + Compiler.currentToken + "' was found.");
+			setError();
+		}
+		else
+			Compiler.Lexer.getNextToken();
 	}
 
 	@Override
 	public void title() throws CompilerException {
 		// TODO Auto-generated method stub
-
+		
 	}
 
 	@Override
@@ -77,7 +110,37 @@ public class MySynAnalyzer implements SyntaxAnalyzer {
 	@Override
 	public void variableDefine() throws CompilerException {
 		// TODO Auto-generated method stub
-
+		if ((new Var_Def()).isLegal(Compiler.currentToken)){
+			Compiler.Lexer.getNextToken();
+			if ((new Text()).isLegal(Compiler.currentToken)){
+				Compiler.Lexer.getNextToken();
+				if ((new EQSign()).isLegal(Compiler.currentToken)){
+					Compiler.Lexer.getNextToken();
+					if ((new Text()).isLegal(Compiler.currentToken)){
+						Compiler.Lexer.getNextToken();
+						if ((new Var_End()).isLegal(Compiler.currentToken)){
+							Compiler.Lexer.getNextToken();
+						}
+						else{
+							System.out.println("SYNTAX ERROR - A variable end tag was expected when '" + Compiler.currentToken + "' was found.");
+							setError();
+						}
+					}
+					else{
+						System.out.println("SYNTAX ERROR - Text was expected when '" + Compiler.currentToken + "' was found.");
+						setError();
+					}
+				}
+				else{
+					System.out.println("SYNTAX ERROR - An equals sign was expected when '" + Compiler.currentToken + "' was found.");
+					setError();
+				}
+			}
+			else{
+				System.out.println("SYNTAX ERROR - Text was expected when '" + Compiler.currentToken + "' was found.");
+				setError();
+			}
+		}
 	}
 
 	@Override
