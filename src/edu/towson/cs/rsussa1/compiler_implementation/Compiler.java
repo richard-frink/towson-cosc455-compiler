@@ -29,6 +29,12 @@ public class Compiler {
 			
 		}
 		
+		/**
+		 * there needs to be tons of code here to build a stack and process things as they are read from the source file
+		 * then it needs to be able to print a stack trace, i'm thinking just a sort of line of jargin, aka everying
+		 * in order as it should but just with a space in between, i.e. #begin ^ < my title > ^ yada yada yada.....
+		 */
+		
 		fr.close();
 	}
 }

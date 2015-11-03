@@ -17,8 +17,7 @@ public class MyLexAnalyzer implements LexicalAnalyzer {
 	
 	public void start(String file){
 		source = file;
-		
-		
+		getNextToken();
 	}
 	
 	@Override
@@ -28,17 +27,30 @@ public class MyLexAnalyzer implements LexicalAnalyzer {
 
 	@Override
 	public void getCharacter() {
-		// TODO Auto-generated method stub
-
+		if(!source.equals("")){
+			nextChar = source.charAt(currentPosition);
+			source.substring(1);
+			//this cuts off the first char, the one we are now going to process
+			if(!isSpace(String.valueOf(nextChar))){
+				
+			}
+			else{
+				currentPosition++;
+				getCharacter();
+			}
+		}
+		//		else{
+		//					this needs to in some way say that the source file is finished with
+		//		}
 	}
 
 	@Override
 	public void addCharacter() {
-		if(false); //isspace false
-		else{
+		lexeme[lexLength] = nextChar;
+		lexLength++;
+		if(!source.equals(""))
+			currentPosition++;
 			getCharacter();
-		}
-
 	}
 
 	@Override
