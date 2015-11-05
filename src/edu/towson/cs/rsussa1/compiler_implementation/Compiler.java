@@ -7,33 +7,31 @@ package edu.towson.cs.rsussa1.compiler_implementation;
  */
 
 import java.io.*;
-import java.util.Stack;
 
 public class Compiler {
 	public static String currentToken;
 	public static MyLexAnalyzer Lexer;
-	public static Stack<String> myStack = new Stack<String>();
 	
 	public static void main(String[] args) throws IOException{
 		Lexer = new MyLexAnalyzer();
 		MySynAnalyzer Parser = new MySynAnalyzer();
 		
 		String sourceLine = null;
+		String temp = "";
 		
 		FileReader fr = new FileReader(args[0]);
 		BufferedReader br = new BufferedReader(fr);
+		/**
+		 * need to check if the file is actually of extension ".mkd"!!!!!!!!!!!!!!!!!!!!!!!!!!!!1
+		 */
 		
 		while((sourceLine = br.readLine()) != null){
-			Lexer.start(sourceLine);
-			
-			
+			temp = temp + sourceLine;
 		}
+		Lexer.start(temp);
+		Parser.markdown();
 		
-		/**
-		 * there needs to be tons of code here to build a stack and process things as they are read from the source file
-		 * then it needs to be able to print a stack trace, i'm thinking just a sort of line of jargin, aka everying
-		 * in order as it should but just with a space in between, i.e. #begin ^ < my title > ^ yada yada yada.....
-		 */
+		
 		
 		fr.close();
 	}

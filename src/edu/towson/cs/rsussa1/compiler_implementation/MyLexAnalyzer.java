@@ -22,6 +22,12 @@ public class MyLexAnalyzer implements LexicalAnalyzer {
 	
 	@Override
 	public void getNextToken() {
+		if(source == ""){
+			Compiler.currentToken = "";
+		}
+		else{
+			
+		}
 		
 	}
 
@@ -32,16 +38,13 @@ public class MyLexAnalyzer implements LexicalAnalyzer {
 			source.substring(1);
 			//this cuts off the first char, the one we are now going to process
 			if(!isSpace(String.valueOf(nextChar))){
-				
+				addCharacter();
 			}
 			else{
 				currentPosition++;
 				getCharacter();
 			}
 		}
-		//		else{
-		//					this needs to in some way say that the source file is finished with
-		//		}
 	}
 
 	@Override
@@ -63,8 +66,7 @@ public class MyLexAnalyzer implements LexicalAnalyzer {
 
 	@Override
 	public boolean lookupToken() {
-		// TODO Auto-generated method stub
+		
 		return false;
 	}
-
 }

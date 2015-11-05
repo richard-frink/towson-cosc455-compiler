@@ -25,9 +25,7 @@ public class Text implements LegalToken {
 		if(exists){
 			return true;
 		}
-		else{
-			return false;
-		}
+		return false;
 	}
 
 	@Override

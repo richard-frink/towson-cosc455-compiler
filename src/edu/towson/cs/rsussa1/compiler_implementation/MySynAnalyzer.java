@@ -7,52 +7,72 @@ package edu.towson.cs.rsussa1.compiler_implementation;
  */
 
 import java.awt.color.CMMException;
+import java.util.Stack;
+import java.awt.Desktop;
+import java.io.*;
+import java.io.IOException;
+
 import edu.towson.cs.rsussa1.tokens.*;
 import edu.towson.cs.rsussa1.compiler_implementation.Compiler;
 import edu.towson.cosc.cosc455.interfaces.*;
 
 public class MySynAnalyzer implements SyntaxAnalyzer {
+	private static Stack<String> myStack = new Stack<String>();
+	private static Stack<String> htmlStack = new Stack<String>();
 	
 	@Override
 	public void markdown() throws CMMException {
-		//check every token and calls the appropriate methods and what-not
-		
 		try{
 			if (!(new Hash_Begin()).isLegal(Compiler.currentToken)){
 				throw new CompilerException("SYNTAX ERROR - A document begin tag was expected when '" + Compiler.currentToken + "' was found.");
 			}
-			else
+			else{
+				addToParseTree();
 				Compiler.Lexer.getNextToken();
-			variableDefine();
-			head();
+			}
+			if((new Carrot()).isLegal(Compiler.currentToken)){
+				head();
+			}
+			if((new Var_Def()).isLegal(Compiler.currentToken)){
+				variableDefine();
+			}
 			body();
 			if (!(new Hash_End()).isLegal(Compiler.currentToken)){
 				throw new CompilerException("SYNTAX ERROR - A document end tag was expected when '" + Compiler.currentToken + "' was found.");
 			}
-			else
+			else{
+				addToParseTree();
 				Compiler.Lexer.getNextToken();
+				if(!((Compiler.currentToken).equals(""))){
+					throw new CompilerException("SYNTAX ERROR - No code should be found after the document end tag!!! '" + Compiler.currentToken + "' was found.");
+				}
+				else{
+					createHtml();
+				}
+			}
 		} catch(CompilerException e) {
 			e.printStackTrace();
 		}
 	}
 
 	@Override
-	public void head() throws CompilerException {
-		// i need to put in a line that checks if the currentToken is the possible match or if it skips the uneccesary token possibility
-		
-		
+	public void head() throws CompilerException {		
 		try{
 			if (!(new Carrot()).isLegal(Compiler.currentToken)){
 				throw new CompilerException("SYNTAX ERROR - A head begin tag was expected when '" + Compiler.currentToken + "' was found.");
 			}
-			else
+			else{
+				addToParseTree();
 				Compiler.Lexer.getNextToken();
+			}
 			title();
 			if (!(new Carrot()).isLegal(Compiler.currentToken)){
 				throw new CompilerException("SYNTAX ERROR - A head end tag was expected when '" + Compiler.currentToken + "' was found.");
 			}
-			else
+			else{
+				addToParseTree();
 				Compiler.Lexer.getNextToken();
+			}
 		} catch(CompilerException e) {
 			e.printStackTrace();
 		}
@@ -64,18 +84,24 @@ public class MySynAnalyzer implements SyntaxAnalyzer {
 			if (!(new Angle_Open()).isLegal(Compiler.currentToken)){
 				throw new CompilerException("SYNTAX ERROR - A title open tag was expected when '" + Compiler.currentToken + "' was found.");
 			}
-			else
+			else{
+				addToParseTree();
 				Compiler.Lexer.getNextToken();
+			}
 			if (!(new Text()).isLegal(Compiler.currentToken)){
 				throw new CompilerException("SYNTAX ERROR - Valid Text was expected when '" + Compiler.currentToken + "' was found.");
 			}
-			else
+			else{
+				addToParseTree();
 				Compiler.Lexer.getNextToken();
-			if (!(new Angle_Close()).isLegal(Compiler.currentToken)){
-				throw new CompilerException("SYNTAX ERROR - A title close was expected when '" + Compiler.currentToken + "' was found.");
 			}
-			else
+			if (!(new Angle_Close()).isLegal(Compiler.currentToken)){
+				throw new CompilerException("SYNTAX ERROR - A title close tag was expected when '" + Compiler.currentToken + "' was found.");
+			}
+			else{
+				addToParseTree();
 				Compiler.Lexer.getNextToken();
+			}
 		} catch(CompilerException e) {
 			e.printStackTrace();
 		}
@@ -83,60 +109,139 @@ public class MySynAnalyzer implements SyntaxAnalyzer {
 
 	@Override
 	public void body() throws CompilerException {
-		// TODO Auto-generated method stub
-
+		try{
+			if((new Curly_Open()).isLegal(Compiler.currentToken)){
+				paragraph();
+				body();
+			}
+			else if((new Var_Use()).isLegal(Compiler.currentToken) || (new Bold()).isLegal(Compiler.currentToken) || (new Italic()).isLegal(Compiler.currentToken) || 
+					(new List_Open()).isLegal(Compiler.currentToken) || (new Audio()).isLegal(Compiler.currentToken) || (new Video()).isLegal(Compiler.currentToken) || 
+					(new LP_Open()).isLegal(Compiler.currentToken) || (new Page_Break()).isLegal(Compiler.currentToken) || (new Text()).isLegal(Compiler.currentToken)){
+				innerText();
+				body();
+			}
+			else if((new Page_Break()).isLegal(Compiler.currentToken)){
+				newline();
+				body();
+			}
+			else{
+				throw new CompilerException("SYNTAX ERROR - No legal syntax was found. '" + Compiler.currentToken + "' was found.");
+			}
+		} catch(CompilerException e) {
+			e.printStackTrace();
+		}
 	}
 
 	@Override
 	public void paragraph() throws CompilerException {
-		// TODO Auto-generated method stub
-
+		try{
+			if (!(new Curly_Open()).isLegal(Compiler.currentToken)){
+				throw new CompilerException("SYNTAX ERROR - A paragraph begin tag was expected when '" + Compiler.currentToken + "' was found.");
+			}
+			else{
+				addToParseTree();
+				Compiler.Lexer.getNextToken();
+			}
+			variableDefine();
+			innerText();
+			if (!(new Curly_Close()).isLegal(Compiler.currentToken)){
+				throw new CompilerException("SYNTAX ERROR - A paragraph end tag was expected when '" + Compiler.currentToken + "' was found.");
+			}
+			else{
+				addToParseTree();
+				Compiler.Lexer.getNextToken();
+			}
+		} catch(CompilerException e) {
+			e.printStackTrace();
+		}
 	}
 
 	@Override
 	public void innerText() throws CompilerException {
-		// TODO Auto-generated method stub
-
+		try{
+			if((new Var_Use()).isLegal(Compiler.currentToken)){
+				variableUse();
+				innerText();
+			}
+			else if((new Bold()).isLegal(Compiler.currentToken)){
+				bold();
+				innerText();
+			}
+			else if((new Italic()).isLegal(Compiler.currentToken)){
+				italics();
+				innerText();
+			}
+			else if((new List_Open()).isLegal(Compiler.currentToken)){
+				listitem();
+				innerText();
+			}
+			else if((new Audio()).isLegal(Compiler.currentToken)){
+				audio();
+				innerText();
+			}
+			else if((new Video()).isLegal(Compiler.currentToken)){
+				video();
+				innerText();
+			}
+			else if((new LP_Open()).isLegal(Compiler.currentToken)){
+				link();
+				innerText();
+			}
+			else if((new Page_Break()).isLegal(Compiler.currentToken)){
+				newline();
+				innerText();
+			}
+			else if((new Text()).isLegal(Compiler.currentToken)){
+				addToParseTree();
+				Compiler.Lexer.getNextToken();
+				innerText();
+			}
+		} catch(CompilerException e) {
+			e.printStackTrace();
+		}
 	}
 
 	@Override
 	public void variableDefine() throws CompilerException {		
 		
 		try{		
-		//check if (the token is hash_begin) then (check if (stack is empty) then (break) else (throw exception))
-		//if else (the var_def)
-		//else throw exception
-		
-		
 			if ((new Var_Def()).isLegal(Compiler.currentToken)){
+				addToParseTree();
 				Compiler.Lexer.getNextToken();
-				if ((new Text()).isLegal(Compiler.currentToken)){
-					Compiler.Lexer.getNextToken();
-					if ((new EQSign()).isLegal(Compiler.currentToken)){
-						Compiler.Lexer.getNextToken();
-						if ((new Text()).isLegal(Compiler.currentToken)){
-							Compiler.Lexer.getNextToken();
-							if ((new Var_End()).isLegal(Compiler.currentToken)){
-								Compiler.Lexer.getNextToken();
-							}
-							else{
-								throw new CompilerException("");
-							}
-						}
-						else{
-							throw new CompilerException("");
-						}
-					}
-					else{
-						throw new CompilerException("");
-					}
-				}
-				else{
-					throw new CompilerException("");
-				}
 			}
 			else{
-				throw new CompilerException("");
+				throw new CompilerException("SYNTAX ERROR - A variable definition tag was expected when '" + Compiler.currentToken + "' was found.");
+			}
+			if ((new Text()).isLegal(Compiler.currentToken)){
+				addToParseTree();
+				Compiler.Lexer.getNextToken();
+			}
+			else{
+				throw new CompilerException("SYNTAX ERROR - Valid text was expected when '" + Compiler.currentToken + "' was found.");
+			}
+			if ((new EQSign()).isLegal(Compiler.currentToken)){
+				addToParseTree();
+				Compiler.Lexer.getNextToken();
+			}
+			else{
+				throw new CompilerException("SYNTAX ERROR - An equals sign was expected when '" + Compiler.currentToken + "' was found.");
+			}
+			if ((new Text()).isLegal(Compiler.currentToken)){
+				addToParseTree();
+				Compiler.Lexer.getNextToken();
+			}
+			else{
+				throw new CompilerException("SYNTAX ERROR - Valid text was expected when '" + Compiler.currentToken + "' was found.");
+			}
+			if ((new Var_End()).isLegal(Compiler.currentToken)){
+				addToParseTree();
+				Compiler.Lexer.getNextToken();
+			}
+			else{
+				throw new CompilerException("SYNTAX ERROR - A variable end tag was expected when '" + Compiler.currentToken + "' was found.");
+			}
+			if ((new Var_Def()).isLegal(Compiler.currentToken)){
+				variableDefine();
 			}
 		}catch(CompilerException e){
 			e.printStackTrace();
@@ -149,18 +254,24 @@ public class MySynAnalyzer implements SyntaxAnalyzer {
 			if (!(new Var_Use()).isLegal(Compiler.currentToken)){
 				throw new CompilerException("SYNTAX ERROR - A variable use tag was expected when '" + Compiler.currentToken + "' was found.");
 			}
-			else
+			else{
+				addToParseTree();
 				Compiler.Lexer.getNextToken();
+			}
 			if (!(new Text()).isLegal(Compiler.currentToken)){
 				throw new CompilerException("SYNTAX ERROR - Valid Text was expected when '" + Compiler.currentToken + "' was found.");
 			}
-			else
+			else{
+				addToParseTree();
 				Compiler.Lexer.getNextToken();
+			}
 			if (!(new Var_End()).isLegal(Compiler.currentToken)){
 				throw new CompilerException("SYNTAX ERROR - A variable end tag was expected when '" + Compiler.currentToken + "' was found.");
 			}
-			else
+			else{
+				addToParseTree();
 				Compiler.Lexer.getNextToken();
+			}
 		} catch(CompilerException e) {
 			e.printStackTrace();
 		}
@@ -172,18 +283,24 @@ public class MySynAnalyzer implements SyntaxAnalyzer {
 			if (!(new Bold()).isLegal(Compiler.currentToken)){
 				throw new CompilerException("SYNTAX ERROR - A bold tag was expected when '" + Compiler.currentToken + "' was found.");
 			}
-			else
+			else{
+				addToParseTree();
 				Compiler.Lexer.getNextToken();
+			}
 			if (!(new Text()).isLegal(Compiler.currentToken)){
 				throw new CompilerException("SYNTAX ERROR - Valid Text was expected when '" + Compiler.currentToken + "' was found.");
 			}
-			else
+			else{
+				addToParseTree();
 				Compiler.Lexer.getNextToken();
+			}
 			if (!(new Bold()).isLegal(Compiler.currentToken)){
 				throw new CompilerException("SYNTAX ERROR - A bold tag was expected when '" + Compiler.currentToken + "' was found.");
 			}
-			else
+			else{
+				addToParseTree();
 				Compiler.Lexer.getNextToken();
+			}
 		} catch(CompilerException e) {
 			e.printStackTrace();
 		}
@@ -195,18 +312,24 @@ public class MySynAnalyzer implements SyntaxAnalyzer {
 			if (!(new Italic()).isLegal(Compiler.currentToken)){
 				throw new CompilerException("SYNTAX ERROR - An italic tag was expected when '" + Compiler.currentToken + "' was found.");
 			}
-			else
+			else{
+				addToParseTree();
 				Compiler.Lexer.getNextToken();
+			}
 			if (!(new Text()).isLegal(Compiler.currentToken)){
 				throw new CompilerException("SYNTAX ERROR - Valid Text was expected when '" + Compiler.currentToken + "' was found.");
 			}
-			else
+			else{
+				addToParseTree();
 				Compiler.Lexer.getNextToken();
+			}
 			if (!(new Italic()).isLegal(Compiler.currentToken)){
 				throw new CompilerException("SYNTAX ERROR - An italic tag was expected when '" + Compiler.currentToken + "' was found.");
 			}
-			else
+			else{
+				addToParseTree();
 				Compiler.Lexer.getNextToken();
+			}
 		} catch(CompilerException e) {
 			e.printStackTrace();
 		}
@@ -214,14 +337,53 @@ public class MySynAnalyzer implements SyntaxAnalyzer {
 
 	@Override
 	public void listitem() throws CompilerException {
-		// TODO Auto-generated method stub
-
+		try{
+			if (!(new List_Open()).isLegal(Compiler.currentToken)){
+				throw new CompilerException("SYNTAX ERROR - A list begin token was expected when '" + Compiler.currentToken + "' was found.");
+			}
+			else{
+				addToParseTree();
+				Compiler.Lexer.getNextToken();
+			}
+			innerItem();
+			if (!(new List_Close()).isLegal(Compiler.currentToken)){
+				throw new CompilerException("SYNTAX ERROR - An list end token was expected when '" + Compiler.currentToken + "' was found.");
+			}
+			else{
+				addToParseTree();
+				Compiler.Lexer.getNextToken();
+			}
+			if((new List_Open()).isLegal(Compiler.currentToken)){
+				listitem();
+			}
+		}catch(CompilerException e){
+			e.printStackTrace();
+		}
 	}
 
 	@Override
 	public void innerItem() throws CMMException {
-		// TODO Auto-generated method stub
-
+		try{
+			if((new LP_Open()).isLegal(Compiler.currentToken)){
+				link();
+				innerItem();
+			}
+			else if((new Bold()).isLegal(Compiler.currentToken)){
+				bold();
+				innerItem();
+			}
+			else if((new Italic()).isLegal(Compiler.currentToken)){
+				italics();
+				innerItem();
+			}
+			else if((new Text()).isLegal(Compiler.currentToken)){
+				addToParseTree();
+				Compiler.Lexer.getNextToken();
+				innerItem();
+			}
+		} catch(CompilerException e) {
+			e.printStackTrace();
+		}
 	}
 
 	@Override
@@ -230,33 +392,45 @@ public class MySynAnalyzer implements SyntaxAnalyzer {
 			if (!(new LP_Open()).isLegal(Compiler.currentToken)){
 				throw new CompilerException("SYNTAX ERROR - A link begin token was expected when '" + Compiler.currentToken + "' was found.");
 			}
-			else
+			else{
+				addToParseTree();
 				Compiler.Lexer.getNextToken();
+			}
 			if (!(new Text()).isLegal(Compiler.currentToken)){
 				throw new CompilerException("SYNTAX ERROR - Valid Text was expected when '" + Compiler.currentToken + "' was found.");
 			}
-			else
+			else{
+				addToParseTree();
 				Compiler.Lexer.getNextToken();
+			}
 			if (!(new LP_Close()).isLegal(Compiler.currentToken)){
 				throw new CompilerException("SYNTAX ERROR - A link end token was expected when '" + Compiler.currentToken + "' was found.");
 			}
-			else
+			else{
+				addToParseTree();
 				Compiler.Lexer.getNextToken();
+			}
 			if (!(new Address_Open()).isLegal(Compiler.currentToken)){
 				throw new CompilerException("SYNTAX ERROR - An address begin token was expected when '" + Compiler.currentToken + "' was found.");
 			}
-			else
+			else{
+				addToParseTree();
 				Compiler.Lexer.getNextToken();
+			}
 			if (!(new Text()).isLegal(Compiler.currentToken)){
 				throw new CompilerException("SYNTAX ERROR - Valid Text was expected when '" + Compiler.currentToken + "' was found.");
 			}
-			else
+			else{
+				addToParseTree();
 				Compiler.Lexer.getNextToken();
+			}
 			if (!(new Address_Close()).isLegal(Compiler.currentToken)){
 				throw new CompilerException("SYNTAX ERROR - An address end token was expected when '" + Compiler.currentToken + "' was found.");
 			}
-			else
+			else{
+				addToParseTree();
 				Compiler.Lexer.getNextToken();
+			}
 		} catch(CompilerException e) {
 			e.printStackTrace();
 		}
@@ -268,23 +442,31 @@ public class MySynAnalyzer implements SyntaxAnalyzer {
 			if (!(new Audio()).isLegal(Compiler.currentToken)){
 				throw new CompilerException("SYNTAX ERROR - An audio tag was expected when '" + Compiler.currentToken + "' was found.");
 			}
-			else
+			else{
+				addToParseTree();
 				Compiler.Lexer.getNextToken();
+			}
 			if (!(new Address_Open()).isLegal(Compiler.currentToken)){
 				throw new CompilerException("SYNTAX ERROR - An address begin token was expected when '" + Compiler.currentToken + "' was found.");
 			}
-			else
+			else{
+				addToParseTree();
 				Compiler.Lexer.getNextToken();
+			}
 			if (!(new Text()).isLegal(Compiler.currentToken)){
 				throw new CompilerException("SYNTAX ERROR - Valid Text was expected when '" + Compiler.currentToken + "' was found.");
 			}
-			else
+			else{
+				addToParseTree();
 				Compiler.Lexer.getNextToken();
+			}
 			if (!(new Address_Close()).isLegal(Compiler.currentToken)){
 				throw new CompilerException("SYNTAX ERROR - An address end token was expected when '" + Compiler.currentToken + "' was found.");
 			}
-			else
+			else{
+				addToParseTree();
 				Compiler.Lexer.getNextToken();
+			}
 		} catch(CompilerException e) {
 			e.printStackTrace();
 		}
@@ -296,23 +478,31 @@ public class MySynAnalyzer implements SyntaxAnalyzer {
 			if (!(new Video()).isLegal(Compiler.currentToken)){
 				throw new CompilerException("SYNTAX ERROR - A video tag was expected when '" + Compiler.currentToken + "' was found.");
 			}
-			else
+			else{
+				addToParseTree();
 				Compiler.Lexer.getNextToken();
+			}
 			if (!(new Address_Open()).isLegal(Compiler.currentToken)){
 				throw new CompilerException("SYNTAX ERROR - An address begin token was expected when '" + Compiler.currentToken + "' was found.");
 			}
-			else
+			else{
+				addToParseTree();
 				Compiler.Lexer.getNextToken();
+			}
 			if (!(new Text()).isLegal(Compiler.currentToken)){
 				throw new CompilerException("SYNTAX ERROR - Valid Text was expected when '" + Compiler.currentToken + "' was found.");
 			}
-			else
+			else{
+				addToParseTree();
 				Compiler.Lexer.getNextToken();
+			}
 			if (!(new Address_Close()).isLegal(Compiler.currentToken)){
 				throw new CompilerException("SYNTAX ERROR - An address begin token was expected when '" + Compiler.currentToken + "' was found.");
 			}
-			else
+			else{
+				addToParseTree();
 				Compiler.Lexer.getNextToken();
+			}
 		} catch(CompilerException e) {
 			e.printStackTrace();
 		}
@@ -325,9 +515,54 @@ public class MySynAnalyzer implements SyntaxAnalyzer {
 				throw new CompilerException("SYNTAX ERROR - A newline token was expected when '" + Compiler.currentToken + "' was found.");
 			}
 			else
+				addToParseTree();
 				Compiler.Lexer.getNextToken();
 		} catch(CompilerException e) {
 			e.printStackTrace();
 		}
+	}
+	
+	public void addToParseTree(){
+		myStack.push(Compiler.currentToken);
+	}
+	
+	private void createHtmlStack(){
+		
+	}
+	
+	public void createHtml(){
+		createHtmlStack();
+		
+		
+		
+		try{
+			File dir = new File("");//needs to find the PATH of the file input to the compiler
+			dir.mkdirs();
+			File tmp = new File(dir, "");// needs to name the file the same thing except ".html"
+			tmp.createNewFile();
+		} catch(IOException ioe) {
+			System.err.println("Failed to find file");
+			ioe.printStackTrace();
+		}
+	}
+	
+	void createNewFile(String sourceFile){
+		
+	}
+	
+	void openHTMLFileInBrowswer(String htmlFileStr){
+		File file= new File(htmlFileStr.trim());
+		if(!file.exists()){
+			System.err.println("File "+ htmlFileStr +" does not exist.");
+			return;
+		}
+		try{
+			Desktop.getDesktop().browse(file.toURI());
+		}
+		catch(IOException ioe){
+			System.err.println("Failed to open file");
+			ioe.printStackTrace();
+		}
+		return ;
 	}
 }
