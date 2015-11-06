@@ -11,28 +11,44 @@ import java.io.*;
 public class Compiler {
 	public static String currentToken;
 	public static MyLexAnalyzer Lexer;
+	public static String file = "";
+	public static String filePath = "";
 	
 	public static void main(String[] args) throws IOException{
 		Lexer = new MyLexAnalyzer();
 		MySynAnalyzer Parser = new MySynAnalyzer();
 		
-		String sourceLine = null;
-		String temp = "";
+		String sourceFile = args[0];
 		
-		FileReader fr = new FileReader(args[0]);
-		BufferedReader br = new BufferedReader(fr);
-		/**
-		 * need to check if the file is actually of extension ".mkd"!!!!!!!!!!!!!!!!!!!!!!!!!!!!1
-		 */
-		
-		while((sourceLine = br.readLine()) != null){
-			temp = temp + sourceLine;
+		String ext = "";
+		int i = sourceFile.lastIndexOf('.');
+		if (i > 0) {
+		    ext = sourceFile.substring(i+1);
+		    file = sourceFile.substring(0, i);
 		}
-		Lexer.start(temp);
-		Parser.markdown();
 		
-		
-		
-		fr.close();
+		if(ext.equalsIgnoreCase("mkd")){
+			File sourceF = new File(sourceFile);
+			sourceF.mkdirs();
+			//need to get path for file ah i do not know how to manipulate files for crap dudeeeeee
+			String sourceLine = null;
+			String temp = "";
+			
+			FileReader fr = new FileReader(sourceFile);
+			BufferedReader br = new BufferedReader(fr);
+			
+			while((sourceLine = br.readLine()) != null){
+				temp = temp + sourceLine;
+			}
+			Lexer.start(temp);
+			Parser.markdown();
+			
+			
+			
+			fr.close();
+		}
+		else{
+			System.err.print("The file provided was not of the proper '.mkd' extension. Ending program now.");
+		}
 	}
 }

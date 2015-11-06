@@ -25,6 +25,9 @@ public class MyLexAnalyzer implements LexicalAnalyzer {
 		if(source == ""){
 			Compiler.currentToken = "";
 		}
+		else if(true){//lex length exceeds 100 then return lexical error because no valid lexeme is found
+			
+		}
 		else{
 			
 		}

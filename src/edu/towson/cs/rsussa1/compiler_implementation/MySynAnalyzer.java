@@ -527,7 +527,7 @@ public class MySynAnalyzer implements SyntaxAnalyzer {
 	}
 	
 	private void createHtmlStack(){
-		
+		htmlStack.push("");
 	}
 	
 	public void createHtml(){
@@ -536,9 +536,9 @@ public class MySynAnalyzer implements SyntaxAnalyzer {
 		
 		
 		try{
-			File dir = new File("");//needs to find the PATH of the file input to the compiler
+			File dir = new File(Compiler.file);//needs to find the PATH of the file input to the compiler
 			dir.mkdirs();
-			File tmp = new File(dir, "");// needs to name the file the same thing except ".html"
+			File tmp = new File(dir, Compiler.file + ".html");// needs to name the file the same thing except ".html"
 			tmp.createNewFile();
 		} catch(IOException ioe) {
 			System.err.println("Failed to find file");
@@ -547,7 +547,21 @@ public class MySynAnalyzer implements SyntaxAnalyzer {
 	}
 	
 	void createNewFile(String sourceFile){
-		
+		try {
+			File file = new File(Compiler.file + ".html");
+
+			if (!file.exists()) {
+				file.createNewFile();
+			}
+
+			FileWriter fw = new FileWriter(file.getAbsoluteFile());
+			BufferedWriter bw = new BufferedWriter(fw);
+			bw.write(sourceFile);
+			bw.close();
+			
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
 	}
 	
 	void openHTMLFileInBrowswer(String htmlFileStr){
