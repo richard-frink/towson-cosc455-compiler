@@ -16,8 +16,6 @@ import java.util.Stack;
 public class MySemAnalyzer {
 	public static Stack<String> myStack = new Stack<String>();
 	private static Stack<String> htmlStack = new Stack<String>();
-
-
 	
 	private void createHtmlStack(){
 		htmlStack.push("");
@@ -53,9 +51,9 @@ public class MySemAnalyzer {
 			BufferedWriter bw = new BufferedWriter(fw);
 			bw.write(sourceFile);
 			bw.close();
-			
-		} catch(IOException e) {
-			e.printStackTrace();
+
+		} catch(IOException ioe) {
+			ioe.printStackTrace();
 		}
 	}
 	

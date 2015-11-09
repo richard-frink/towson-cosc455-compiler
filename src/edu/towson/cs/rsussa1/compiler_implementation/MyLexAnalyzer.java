@@ -6,7 +6,10 @@ package edu.towson.cs.rsussa1.compiler_implementation;
  * Richard Sussan
  */
 
+
+//import java.util.ArrayList;
 import edu.towson.cosc.cosc455.interfaces.LexicalAnalyzer;
+import edu.towson.cs.rsussa1.tokens.*;
 
 public class MyLexAnalyzer implements LexicalAnalyzer {
 	private String source;
@@ -14,6 +17,7 @@ public class MyLexAnalyzer implements LexicalAnalyzer {
 	private char nextChar;
 	private int lexLength;
 	private int currentPosition;
+	//private ArrayList<Token> tokens = new ArrayList<Token>();	
 	
 	public void start(String file){
 		source = file;
@@ -25,11 +29,21 @@ public class MyLexAnalyzer implements LexicalAnalyzer {
 		if(source == ""){
 			Compiler.currentToken = "";
 		}
-		else if(true){//lex length exceeds 100 then return lexical error because no valid lexeme is found
-			
+		else if(lexLength == 100){
+			System.err.print("No legal lexeme found in the source.");
 		}
 		else{
-			
+			while(lexLength <= 100 || !lookupToken()){
+				getCharacter();
+			}
+			if(lexLength == 100){
+				System.err.print("No legal lexeme found, exiting program");
+				System.exit(0);
+			}
+			String currentT = "";
+			for(int i = 0; i < lexLength; i++)
+				currentT = currentT + lexeme[i];
+			Compiler.currentToken = currentT;
 		}
 		
 	}
@@ -69,7 +83,27 @@ public class MyLexAnalyzer implements LexicalAnalyzer {
 
 	@Override
 	public boolean lookupToken() {
-		
+		String currentLex = "";
+		for(int i = 0; i < lexLength; i++)
+			currentLex = currentLex + lexeme[i];
+		if(currentLex.equalsIgnoreCase("{") || currentLex.equalsIgnoreCase("}") || currentLex.equalsIgnoreCase("[") ||
+				currentLex.equalsIgnoreCase("]") || currentLex.equalsIgnoreCase("(") || currentLex.equalsIgnoreCase(")") ||
+				currentLex.equalsIgnoreCase("<") || currentLex.equalsIgnoreCase(">") || currentLex.equalsIgnoreCase("^") ||
+				currentLex.equalsIgnoreCase("@") || currentLex.equalsIgnoreCase("=") || currentLex.equalsIgnoreCase("*") ||
+				currentLex.equalsIgnoreCase("**") || currentLex.equalsIgnoreCase("#begin") || currentLex.equalsIgnoreCase("#end") ||
+				currentLex.equalsIgnoreCase("+") || currentLex.equalsIgnoreCase(";") || currentLex.equalsIgnoreCase("~") ||
+				currentLex.equalsIgnoreCase("$def") || currentLex.equalsIgnoreCase("$use") || currentLex.equalsIgnoreCase("$end") ||
+				currentLex.equalsIgnoreCase("%")){
+			return true;
+		}
+		else{
+			return isText(currentLex);
+		}
+	}
+	
+	public boolean isText(String text){
+		if((new Text()).isLegal(text) && !(new Text()).isLegal((String.valueOf(source.charAt(currentPosition)))))
+			return true;
 		return false;
 	}
 }
