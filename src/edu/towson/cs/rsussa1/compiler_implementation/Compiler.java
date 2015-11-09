@@ -11,12 +11,15 @@ import java.io.*;
 public class Compiler {
 	public static String currentToken;
 	public static MyLexAnalyzer Lexer;
+	public static MySynAnalyzer Parser;
+	public static MySemAnalyzer SemanticAna;
 	public static String file = "";
 	public static String filePath = "";
 	
 	public static void main(String[] args) throws IOException{
 		Lexer = new MyLexAnalyzer();
-		MySynAnalyzer Parser = new MySynAnalyzer();
+		Parser = new MySynAnalyzer();
+		SemanticAna = new MySemAnalyzer();
 		
 		String sourceFile = args[0];
 		
@@ -30,7 +33,11 @@ public class Compiler {
 		if(ext.equalsIgnoreCase("mkd")){
 			File sourceF = new File(sourceFile);
 			sourceF.mkdirs();
+			
+			
 			//need to get path for file ah i do not know how to manipulate files for crap dudeeeeee
+			
+			
 			String sourceLine = null;
 			String temp = "";
 			
@@ -38,8 +45,9 @@ public class Compiler {
 			BufferedReader br = new BufferedReader(fr);
 			
 			while((sourceLine = br.readLine()) != null){
-				temp = temp + sourceLine;
+				temp = temp + " " + sourceLine;
 			}
+			
 			Lexer.start(temp);
 			Parser.markdown();
 			
