@@ -9,15 +9,14 @@ package edu.towson.cs.rsussa1.compiler_implementation;
 
 //import java.util.ArrayList;
 import edu.towson.cosc.cosc455.interfaces.LexicalAnalyzer;
-import edu.towson.cs.rsussa1.tokens.*;
+import edu.towson.cs.rsussa1.tokens.Text;
 
 public class MyLexAnalyzer implements LexicalAnalyzer {
 	private String source;
 	private char[] lexeme = new char [100];
 	private char nextChar;
-	private int lexLength;
-	private int currentPosition;
-	//private ArrayList<Token> tokens = new ArrayList<Token>();	
+	private int lexLength = 0;
+	private int currentPosition = 0;
 	
 	public void start(String file){
 		source = file;
@@ -26,34 +25,30 @@ public class MyLexAnalyzer implements LexicalAnalyzer {
 	
 	@Override
 	public void getNextToken() {
-		if(source == ""){
+		if(source.length() < currentPosition){
 			Compiler.currentToken = "";
 		}
-		else if(lexLength == 100){
-			System.err.print("No legal lexeme found in the source.");
-		}
 		else{
-			while(lexLength <= 100 || !lookupToken()){
+			while(!lookupToken()){
 				getCharacter();
-			}
-			if(lexLength == 100){
-				System.err.print("No legal lexeme found, exiting program");
-				System.exit(0);
+				if(lexLength > 100){
+					System.err.print("No legal lexeme found, exiting program");
+					System.exit(0);
+				}
 			}
 			String currentT = "";
 			for(int i = 0; i < lexLength; i++)
 				currentT = currentT + lexeme[i];
 			Compiler.currentToken = currentT;
+			lexeme = new char[100];
+			lexLength = 0;
 		}
-		
 	}
 
 	@Override
 	public void getCharacter() {
-		if(!source.equals("")){
+		if(source.length() > currentPosition){
 			nextChar = source.charAt(currentPosition);
-			source.substring(1);
-			//this cuts off the first char, the one we are now going to process
 			if(!isSpace(String.valueOf(nextChar))){
 				addCharacter();
 			}
@@ -70,7 +65,6 @@ public class MyLexAnalyzer implements LexicalAnalyzer {
 		lexLength++;
 		if(!source.equals(""))
 			currentPosition++;
-			getCharacter();
 	}
 
 	@Override
@@ -84,8 +78,10 @@ public class MyLexAnalyzer implements LexicalAnalyzer {
 	@Override
 	public boolean lookupToken() {
 		String currentLex = "";
-		for(int i = 0; i < lexLength; i++)
+		for(int i = 0; i < lexLength; i++){
+			System.out.print(currentLex);
 			currentLex = currentLex + lexeme[i];
+		}
 		if(currentLex.equalsIgnoreCase("{") || currentLex.equalsIgnoreCase("}") || currentLex.equalsIgnoreCase("[") ||
 				currentLex.equalsIgnoreCase("]") || currentLex.equalsIgnoreCase("(") || currentLex.equalsIgnoreCase(")") ||
 				currentLex.equalsIgnoreCase("<") || currentLex.equalsIgnoreCase(">") || currentLex.equalsIgnoreCase("^") ||

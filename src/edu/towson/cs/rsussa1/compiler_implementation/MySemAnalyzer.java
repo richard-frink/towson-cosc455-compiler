@@ -18,9 +18,21 @@ public class MySemAnalyzer {
 	private static Stack<String> htmlStack = new Stack<String>();
 	
 	private void createHtmlStack(){
-		htmlStack.push("");
-		
-		
+		while(!(myStack.isEmpty())){
+			
+		}
+		/**
+		 * create an if statement for every possible string and check to see if it matches up
+		 * otherwise check for text
+		 * 
+		 * SPECIAL CASES
+		 * 
+		 * if text with no var end before it then just push to stack
+		 * 
+		 * if text w/ that (above) then create temp stack and pop off all things into temp stack
+		 * until you find definition of variable, then push back on nothing for var-use and
+		 * in all var use cases of that variable push back on it's definition instead (check if = var use, else push and pop)
+		 */
 	}
 	
 	public void createHtml(){

@@ -32,11 +32,7 @@ public class Compiler {
 		
 		if(ext.equalsIgnoreCase("mkd")){
 			File sourceF = new File(sourceFile);
-			sourceF.mkdirs();
-			
-			
-			//need to get path for file ah i do not know how to manipulate files for crap dudeeeeee
-			
+			sourceF.mkdirs();		
 			
 			String sourceLine = null;
 			String temp = "";
