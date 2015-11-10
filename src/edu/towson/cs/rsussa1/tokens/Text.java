@@ -16,16 +16,18 @@ public class Text implements LegalToken {
 		boolean exists = false;
 		String temp = t.getToken();
 		
-		for(int i = 0; i < temp.length(); i++){
-			if((String.valueOf(temp.charAt(i))).equalsIgnoreCase(str) == true){
-				exists = true;
-				break;
+		for(int i = 0; i < str.length(); i++){
+			exists = false;
+			for(int j = 0; j < temp.length(); j++){
+				if((String.valueOf(temp.charAt(j))).equalsIgnoreCase(str.substring(i, i + 1)) == true){
+					exists = true;
+				}
+			}
+			if(exists == false){
+				return false;
 			}
 		}
-		if(exists){
-			return true;
-		}
-		return false;
+		return true;
 	}
 
 	@Override

@@ -517,6 +517,7 @@ public class MySynAnalyzer implements SyntaxAnalyzer {
 	}
 
 	public void addToParseTree(){
+		System.out.println("  parsetree   " + Compiler.currentToken + "   ");
 		Compiler.SemanticAna.myStack.push(Compiler.currentToken);
 	}
 }

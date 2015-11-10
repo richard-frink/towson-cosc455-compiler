@@ -15,11 +15,13 @@ public class MyLexAnalyzer implements LexicalAnalyzer {
 	private String source;
 	private char[] lexeme = new char [100];
 	private char nextChar;
+	private char tempChar = '\0';
 	private int lexLength = 0;
-	private int currentPosition = 0;
+	private static int currentPosition = 0;
 	
 	public void start(String file){
 		source = file;
+		getCharacter();
 		getNextToken();
 	}
 	
@@ -29,19 +31,89 @@ public class MyLexAnalyzer implements LexicalAnalyzer {
 			Compiler.currentToken = "";
 		}
 		else{
-			while(!lookupToken()){
-				getCharacter();
-				if(lexLength > 100){
-					System.err.print("No legal lexeme found, exiting program");
-					System.exit(0);
+			do {
+				if(nextChar == '$'){
+					getCharacter();
+					if(nextChar == 'd' || nextChar == 'D'){
+						getCharacter();
+						if(nextChar == 'e' || nextChar == 'E'){
+							getCharacter();
+							if(nextChar == 'f' || nextChar == 'F'){
+								break;
+							}
+						}
+					}
+					else if(nextChar == 'u' || nextChar == 'U'){
+						getCharacter();
+						if(nextChar == 's' || nextChar == 'S'){
+							getCharacter();
+							if(nextChar == 'e' || nextChar == 'E'){
+								break;
+							}
+						}
+					}
+					else if(nextChar == 'e' || nextChar == 'E'){
+						getCharacter();
+						if(nextChar == 'n' || nextChar == 'N'){
+							getCharacter();
+							if(nextChar == 'd' || nextChar == 'D'){
+								break;
+							}
+						}
+					}
 				}
-			}
+				else if(nextChar == '#'){
+					getCharacter();
+					if(nextChar == 'b' || nextChar == 'B'){
+						getCharacter();
+						if(nextChar == 'e' || nextChar == 'E'){
+							getCharacter();
+							if(nextChar == 'g' || nextChar == 'G'){
+								getCharacter();
+								if(nextChar == 'i' || nextChar == 'I'){
+									getCharacter();
+									if(nextChar == 'n' || nextChar == 'N'){
+										break;
+									}
+								}
+							}
+						}
+					}
+					else if(nextChar == 'e' || nextChar == 'E'){
+						getCharacter();
+						if(nextChar == 'n' || nextChar == 'N'){
+							getCharacter();
+							if(nextChar == 'd' || nextChar == 'D'){
+								break;
+							}
+						}
+					}
+				}
+				if(lookupToken()){
+					lexLength--;
+					break;
+				}
+				else if(!isText()){
+					lexLength--;
+					break;
+				}
+				else{
+					getCharacter();
+					continue;
+				}
+			} while(true);
 			String currentT = "";
 			for(int i = 0; i < lexLength; i++)
 				currentT = currentT + lexeme[i];
 			Compiler.currentToken = currentT;
 			lexeme = new char[100];
 			lexLength = 0;
+			if(tempChar != '\0'){
+				nextChar = tempChar;
+				lexeme[0] = nextChar;
+				tempChar = '\0';
+				lexLength++;
+			}
 		}
 	}
 
@@ -79,9 +151,9 @@ public class MyLexAnalyzer implements LexicalAnalyzer {
 	public boolean lookupToken() {
 		String currentLex = "";
 		for(int i = 0; i < lexLength; i++){
-			System.out.print(currentLex);
 			currentLex = currentLex + lexeme[i];
 		}
+		System.out.println(currentLex + "    checking for token");
 		if(currentLex.equalsIgnoreCase("{") || currentLex.equalsIgnoreCase("}") || currentLex.equalsIgnoreCase("[") ||
 				currentLex.equalsIgnoreCase("]") || currentLex.equalsIgnoreCase("(") || currentLex.equalsIgnoreCase(")") ||
 				currentLex.equalsIgnoreCase("<") || currentLex.equalsIgnoreCase(">") || currentLex.equalsIgnoreCase("^") ||
@@ -92,14 +164,20 @@ public class MyLexAnalyzer implements LexicalAnalyzer {
 				currentLex.equalsIgnoreCase("%")){
 			return true;
 		}
-		else{
-			return isText(currentLex);
-		}
+		return false;
 	}
 	
-	public boolean isText(String text){
-		if((new Text()).isLegal(text) && !(new Text()).isLegal((String.valueOf(source.charAt(currentPosition)))))
-			return true;
+	public boolean isText(){
+		if(!lookupToken()){
+			String currentLex = "";
+			for(int i = 0; i < lexLength; i++){
+				currentLex = currentLex + lexeme[i];
+			}
+			System.out.println(currentLex + "    checking for text");
+			if((new Text()).isLegal(currentLex)){
+				return true;
+			}
+		}
 		return false;
 	}
 }
