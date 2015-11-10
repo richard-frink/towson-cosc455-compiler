@@ -15,7 +15,7 @@ public class MyLexAnalyzer implements LexicalAnalyzer {
 	private String source;
 	private char[] lexeme = new char [100];
 	private char nextChar;
-	private char tempChar = '\0';
+	//private char tempChar = '\0';
 	private int lexLength = 0;
 	private static int currentPosition = 0;
 	
@@ -34,29 +34,39 @@ public class MyLexAnalyzer implements LexicalAnalyzer {
 			do {
 				if(nextChar == '$'){
 					getCharacter();
+					addCharacter();
 					if(nextChar == 'd' || nextChar == 'D'){
 						getCharacter();
+						addCharacter();
 						if(nextChar == 'e' || nextChar == 'E'){
 							getCharacter();
+							addCharacter();
 							if(nextChar == 'f' || nextChar == 'F'){
+								addCharacter();
 								break;
 							}
 						}
 					}
 					else if(nextChar == 'u' || nextChar == 'U'){
 						getCharacter();
+						addCharacter();
 						if(nextChar == 's' || nextChar == 'S'){
 							getCharacter();
+							addCharacter();
 							if(nextChar == 'e' || nextChar == 'E'){
+								addCharacter();
 								break;
 							}
 						}
 					}
 					else if(nextChar == 'e' || nextChar == 'E'){
 						getCharacter();
+						addCharacter();
 						if(nextChar == 'n' || nextChar == 'N'){
 							getCharacter();
+							addCharacter();
 							if(nextChar == 'd' || nextChar == 'D'){
+								addCharacter();
 								break;
 							}
 						}
@@ -64,15 +74,21 @@ public class MyLexAnalyzer implements LexicalAnalyzer {
 				}
 				else if(nextChar == '#'){
 					getCharacter();
+					addCharacter();
 					if(nextChar == 'b' || nextChar == 'B'){
 						getCharacter();
+						addCharacter();
 						if(nextChar == 'e' || nextChar == 'E'){
 							getCharacter();
+							addCharacter();
 							if(nextChar == 'g' || nextChar == 'G'){
 								getCharacter();
+								addCharacter();
 								if(nextChar == 'i' || nextChar == 'I'){
 									getCharacter();
+									addCharacter();
 									if(nextChar == 'n' || nextChar == 'N'){
+										addCharacter();
 										break;
 									}
 								}
@@ -81,23 +97,26 @@ public class MyLexAnalyzer implements LexicalAnalyzer {
 					}
 					else if(nextChar == 'e' || nextChar == 'E'){
 						getCharacter();
+						addCharacter();
 						if(nextChar == 'n' || nextChar == 'N'){
 							getCharacter();
+							addCharacter();
 							if(nextChar == 'd' || nextChar == 'D'){
+								addCharacter();
 								break;
 							}
 						}
 					}
 				}
 				if(lookupToken()){
-					lexLength--;
 					break;
 				}
-				else if(!isText()){
-					lexLength--;
+				else if(isText()){
+					getText();
 					break;
 				}
 				else{
+					addCharacter();
 					getCharacter();
 					continue;
 				}
@@ -108,12 +127,12 @@ public class MyLexAnalyzer implements LexicalAnalyzer {
 			Compiler.currentToken = currentT;
 			lexeme = new char[100];
 			lexLength = 0;
-			if(tempChar != '\0'){
-				nextChar = tempChar;
-				lexeme[0] = nextChar;
-				tempChar = '\0';
-				lexLength++;
-			}
+			//if(tempChar != '\0'){
+			//	nextChar = tempChar;
+			//	lexeme[0] = nextChar;
+			//	tempChar = '\0';
+			//	lexLength++;
+			//}
 		}
 	}
 
@@ -121,10 +140,7 @@ public class MyLexAnalyzer implements LexicalAnalyzer {
 	public void getCharacter() {
 		if(source.length() > currentPosition){
 			nextChar = source.charAt(currentPosition);
-			if(!isSpace(String.valueOf(nextChar))){
-				addCharacter();
-			}
-			else{
+			if(isSpace(String.valueOf(nextChar))){
 				currentPosition++;
 				getCharacter();
 			}
@@ -179,5 +195,9 @@ public class MyLexAnalyzer implements LexicalAnalyzer {
 			}
 		}
 		return false;
+	}
+	
+	public void getText(){
+		
 	}
 }
