@@ -28,7 +28,6 @@ public class MySemAnalyzer {
 		
 		while(!htmlStack.isEmpty()){
 			String element = htmlStack.pop();
-			System.out.println(element);
 			temp = temp + " " + element;
 		}
 		
@@ -37,13 +36,11 @@ public class MySemAnalyzer {
 	
 	public void addToStack(String str){
 		myStack.push(str);
-		System.out.println(str);
 	}
 	
 	private void createHtmlStack(){
 		while(!myStack.isEmpty()){
 			String temp = myStack.pop();
-			System.out.println(temp);
 			if(temp.equalsIgnoreCase("<")){
 				htmlStack.push((new Angle_Open()).getHTML(true));
 			}
@@ -166,11 +163,12 @@ public class MySemAnalyzer {
 		String var_def = "";
 		t = new Stack<String>();
 		while(!myStack.isEmpty()){
-			System.out.println(myStack.peek());
-			String check = trimString(myStack.pop());
+			String check = myStack.pop();
+			if(!(new Text()).isLegal(check)){
+				check = trimString(check);
+			}
 			if(check.equalsIgnoreCase("$end")){
 				String temp_var_def = trimString(myStack.pop());
-				System.out.println("\n" + temp_var_def + "\n");
 				check = myStack.pop();
 				if(check.equalsIgnoreCase("=")){
 					String temp_name = trimString(myStack.pop());
@@ -228,8 +226,7 @@ public class MySemAnalyzer {
 				else{
 					myStack.push("$use");
 					myStack.push(temp_var_name);
-					myStack.push("$end");
-					t.pop();
+					myStack.push(t.pop());
 				}
 			}
 			else{
@@ -240,7 +237,7 @@ public class MySemAnalyzer {
 	
 	private String trimString(String needsTrim){
 		String trimmed = "";
-		for(int i = 0; i < needsTrim.length() - 1; i++){
+		for(int i = 0; i < needsTrim.length(); i++){
 			if(!(needsTrim.charAt(i) == ' ')){
 				trimmed = trimmed + needsTrim.charAt(i);
 			}

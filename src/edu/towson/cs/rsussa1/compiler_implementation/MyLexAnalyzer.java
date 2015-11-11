@@ -43,8 +43,9 @@ public class MyLexAnalyzer implements LexicalAnalyzer {
 				}
 				else if(nextChar == '*'){
 					addCharacter();
-					getCharacter();
-					if(nextChar == '*'){
+					char temp = source.charAt(currentPosition + 1);
+					if(temp == '*'){
+						getCharacter();
 						addCharacter();
 					}
 				}
