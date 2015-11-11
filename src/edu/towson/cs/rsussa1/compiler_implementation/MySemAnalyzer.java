@@ -13,110 +13,236 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.util.Stack;
 
+import edu.towson.cs.rsussa1.tokens.*;
+
 public class MySemAnalyzer {
 	public static Stack<String> myStack = new Stack<String>();
 	private static Stack<String> htmlStack = new Stack<String>();
 	private static Stack<String> t;
 	
-	private void createHtmlStack(){
-		while(!(myStack.isEmpty())){
-			System.out.println(myStack.pop());
-		}
-		while(!myStack.isEmpty()){
-			t = new Stack<String>();
-			if((t.pop()).equalsIgnoreCase("<")){
-				
-			}
-			else if((t.pop()).equalsIgnoreCase(">")){
-				
-			}
-			else if((t.pop()).equalsIgnoreCase("^")){
-				
-			}
-			else if((t.pop()).equalsIgnoreCase("{")){
-				
-			}
-			else if((t.pop()).equalsIgnoreCase("}")){
-				
-			}
-			else if((t.pop()).equalsIgnoreCase("#begin")){
-				
-			}
-			else if((t.pop()).equalsIgnoreCase("#end")){
-				
-			}
-			else if((t.pop()).equalsIgnoreCase("*")){
-				
-			}
-			else if((t.pop()).equalsIgnoreCase("**")){
-				
-			}
-			else if((t.pop()).equalsIgnoreCase("~")){
-				
-			}
-			else if((t.pop()).equalsIgnoreCase("+")){
-				
-			}
-			else if((t.pop()).equalsIgnoreCase(";")){
-				
-			}
-			
-		}
-		/**
-		 * create an if statement for every possible string and check to see if it matches up
-		 * 
-		 * <
-		 * >
-		 * ^
-		 * {
-		 * }
-		 * #begin
-		 * #end
-		 * *
-		 * **
-		 * ~
-		 * +
-		 * ;
-		 * 
-		 * 
-		 * otherwise check for text
-		 * 
-		 * SPECIAL CASES
-		 * 
-		 * if text with no var end before it then just push to stack
-		 * 
-		 * if text w/ that (above) then create temp stack and pop off all things into temp stack
-		 * until you find definition of variable, then push back on nothing for var-use and
-		 * in all var use cases of that variable push back on it's definition instead (check if = var use, else push and pop)
-		 * 
-		 * if see an end to a link, capture the text inside and then determine if it is just a link or if it is a video el.
-		 * audio el. or just a hyperlink, then push onto the stack the appropriate representation of the data
-		 */
-	}
-	
-	//passed a backwards stack and as stack is popped off it is  concatenated into a string
 	public void createHtml(){
 		createHtmlStack();
-		String temp = t.pop();
-		while(!(t.isEmpty())){
-			temp = temp + " " + t.pop();
-		}
-		createNewFile(temp);
 		
-		try{
-			File dir = new File(Compiler.file);//needs to find the PATH of the file input to the compiler
-			dir.mkdirs();
-			File tmp = new File(dir, Compiler.file + ".html");// needs to name the file the same thing except ".html"
-			tmp.createNewFile();
-		} catch(IOException ioe) {
-			System.err.println("Failed to find file");
-			ioe.printStackTrace();
+		String temp = "";
+		temp = htmlStack.pop();
+		
+		while(!htmlStack.isEmpty()){
+			String element = htmlStack.pop();
+			System.out.println(element);
+			temp = temp + " " + element;
 		}
+		
+		createNewFile(temp);		
+	}
+	
+	public void addToStack(String str){
+		myStack.push(str);
+		System.out.println(str);
+	}
+	
+	private void createHtmlStack(){
+		while(!myStack.isEmpty()){
+			String temp = myStack.pop();
+			System.out.println(temp);
+			if(temp.equalsIgnoreCase("<")){
+				htmlStack.push((new Angle_Open()).getHTML(true));
+			}
+			else if(temp.equalsIgnoreCase(">")){
+				htmlStack.push((new Angle_Close()).getHTML(true));
+			}
+			else if(temp.equalsIgnoreCase("^")){
+				t = new Stack<String>();
+				boolean exists = false;
+				while(!htmlStack.isEmpty()){
+					String element = htmlStack.pop();
+					if(element.equalsIgnoreCase((new Carrot()).getHTML(false))){
+						exists = true;
+						break;
+					}
+				}
+				while(!t.isEmpty()){
+					htmlStack.push(t.pop());
+				}
+				if(exists == false){
+					htmlStack.push((new Carrot()).getHTML(false));
+				}
+				else{
+					htmlStack.push((new Carrot()).getHTML(true));
+				}
+			}
+			else if(temp.equalsIgnoreCase("{")){
+				htmlStack.push((new Curly_Open()).getHTML(true));
+			}
+			else if(temp.equalsIgnoreCase("}")){
+				htmlStack.push((new Curly_Close()).getHTML(true));
+			}
+			else if(temp.equalsIgnoreCase("#begin")){
+				htmlStack.push((new Hash_Begin()).getHTML(true));
+			}
+			else if(temp.equalsIgnoreCase("#end")){
+				htmlStack.push((new Hash_End()).getHTML(true));
+			}
+			else if(temp.equalsIgnoreCase("*")){
+				t = new Stack<String>();
+				boolean exists = false;
+				while(!htmlStack.isEmpty()){
+					String element = htmlStack.pop();
+					if(element.equalsIgnoreCase((new Italic()).getHTML(false))){
+						exists = true;
+						break;
+					}
+				}
+				while(!t.isEmpty()){
+					htmlStack.push(t.pop());
+				}
+				if(exists == false){
+					htmlStack.push((new Italic()).getHTML(false));
+				}
+				else{
+					htmlStack.push((new Italic()).getHTML(true));
+				}
+			}
+			else if(temp.equalsIgnoreCase("**")){
+				t = new Stack<String>();
+				boolean exists = false;
+				while(!htmlStack.isEmpty()){
+					String element = htmlStack.pop();
+					if(element.equalsIgnoreCase((new Bold()).getHTML(false))){
+						exists = true;
+						break;
+					}
+				}
+				while(!t.isEmpty()){
+					htmlStack.push(t.pop());
+				}
+				if(exists == false){
+					htmlStack.push((new Bold()).getHTML(false));
+				}
+				else{
+					htmlStack.push((new Bold()).getHTML(true));
+				}
+			}
+			else if(temp.equalsIgnoreCase("~")){
+				htmlStack.push((new Page_Break()).getHTML(true));
+			}
+			else if(temp.equalsIgnoreCase("+")){
+				htmlStack.push((new List_Open()).getHTML(true));
+			}
+			else if(temp.equalsIgnoreCase(";")){
+				htmlStack.push((new List_Close()).getHTML(true));
+			}
+			else if((new Text()).isLegal(temp)){
+				htmlStack.push(temp);
+			}
+			else if((new Var_End()).isLegal(temp)){
+				String var_name = trimString(myStack.pop());
+				replaceVariables(var_name);
+			}
+			else if(temp.equalsIgnoreCase(")")){
+				String newLink = "";
+				String address = myStack.pop();
+				myStack.pop();
+				temp = myStack.pop();
+				if(temp.equalsIgnoreCase("@")){
+					newLink = "<audio controls>  <source src=\"" + address + "\">    </audio> "; 
+				}
+				else if(temp.equalsIgnoreCase("%")){
+					newLink = "<iframe src=\"" + address + "\"/> "; 
+				}
+				else{
+					myStack.pop();
+					newLink = "<a href = \"" + address + "\">" + myStack.pop() + "</a>"; 
+					myStack.pop();
+				}
+				htmlStack.push(newLink);
+			}
+		}
+	}
+	
+	private void replaceVariables(String var_name){
+		String var_def = "";
+		t = new Stack<String>();
+		while(!myStack.isEmpty()){
+			String check = trimString(myStack.pop());
+				if(check.equalsIgnoreCase("$end")){
+					String temp_var_def = trimString(myStack.pop());
+					check = myStack.pop();
+					if(check.equalsIgnoreCase("=")){
+						String temp_name = trimString(myStack.pop());
+						if(temp_name.equalsIgnoreCase(var_name)){
+							var_def = temp_var_def;
+							myStack.pop();
+							break;
+						}
+						else{
+							t.push("$end");
+							t.push(temp_var_def);
+							t.push("=");
+							t.push(temp_name);
+							t.push(myStack.pop());
+						}
+					}
+					else if(check.equalsIgnoreCase("$use")){
+						if(!temp_var_def.equalsIgnoreCase(var_name)){
+							t.push("$end");
+						}
+						t.push(temp_var_def);
+						t.push("$use");
+				}
+				else{
+					t.push(check);
+				}
+			}
+		}
+		try{
+			if(myStack.isEmpty()){
+				throw new CompilerException("Static Semantic Error - No variable definition found for \"" + var_name + "\" !");
+			}
+		} catch(CompilerException e){
+			e.printStackTrace();
+			System.exit(0);
+		}
+		while(!t.isEmpty()){
+			String temp = t.pop();
+			if(temp.equalsIgnoreCase("$def")){
+				myStack.push(temp);
+				myStack.push(t.pop());
+				myStack.push(t.pop());
+				myStack.push(t.pop());
+				myStack.push(t.pop());
+			}
+			else if(temp.equalsIgnoreCase("$use")){
+				String temp_var_name = t.pop();
+				if(temp_var_name.equalsIgnoreCase(var_name)){
+					myStack.push(var_def);
+				}
+				else{
+					myStack.push("$use");
+					myStack.push(temp_var_name);
+					myStack.push("$end");
+					t.pop();
+				}
+			}
+			else{
+				myStack.push(temp);
+			}
+		}
+	}
+	
+	private String trimString(String needsTrim){
+		String trimmed = "";
+		for(int i = 0; i < needsTrim.length(); i++){
+			if(!(needsTrim.charAt(i) == ' ')){
+				trimmed = trimmed + needsTrim.charAt(i);
+			}
+		}
+		return trimmed;
 	}
 	
 	public void createNewFile(String sourceFile){
 		try {
-			File file = new File(Compiler.file + ".html");
+			String temp = Compiler.file + ".html";
+			File file = new File(temp);
 
 			if (!file.exists()) {
 				file.createNewFile();
@@ -127,12 +253,13 @@ public class MySemAnalyzer {
 			bw.write(sourceFile);
 			bw.close();
 
+			openHTMLFileInBrowser(temp);
 		} catch(IOException ioe) {
 			ioe.printStackTrace();
 		}
 	}
 	
-	public void openHTMLFileInBrowswer(String htmlFileStr){
+	public void openHTMLFileInBrowser(String htmlFileStr){
 		File file= new File(htmlFileStr.trim());
 		if(!file.exists()){
 			System.err.println("File "+ htmlFileStr +" does not exist.");

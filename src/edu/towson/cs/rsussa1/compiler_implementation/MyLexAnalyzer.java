@@ -41,6 +41,13 @@ public class MyLexAnalyzer implements LexicalAnalyzer {
 					getCharacter();
 					getHash();
 				}
+				else if(nextChar == '*'){
+					addCharacter();
+					getCharacter();
+					if(nextChar == '*'){
+						addCharacter();
+					}
+				}
 				else if(lookupToken()){
 					addCharacter();
 				}
@@ -60,7 +67,6 @@ public class MyLexAnalyzer implements LexicalAnalyzer {
 			String currentT = "";
 			for(int i = 0; i < lexLength; i++){
 				currentT = currentT + lexeme[i];
-				System.out.println(lexeme[i]);
 			}
 			Compiler.currentToken = currentT;
 			for(int i = 0; i < 100; i++){

@@ -24,11 +24,11 @@ public class MySynAnalyzer implements SyntaxAnalyzer {
 				addToParseTree();
 				Compiler.Lexer.getNextToken();
 			}
-			if((new Carrot()).isLegal(Compiler.currentToken)){
-				head();
-			}
 			if((new Var_Def()).isLegal(Compiler.currentToken)){
 				variableDefine();
+			}
+			if((new Carrot()).isLegal(Compiler.currentToken)){
+				head();
 			}
 			body();
 			if (!(new Hash_End()).isLegal(Compiler.currentToken)){
@@ -518,7 +518,6 @@ public class MySynAnalyzer implements SyntaxAnalyzer {
 	}
 
 	public void addToParseTree(){
-		System.out.println("  parsetree   " + Compiler.currentToken + "   ");
-		Compiler.SemanticAna.myStack.push(Compiler.currentToken);
+		Compiler.SemanticAna.addToStack(Compiler.currentToken);
 	}
 }
