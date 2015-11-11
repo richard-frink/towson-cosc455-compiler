@@ -36,13 +36,7 @@ public class MySynAnalyzer implements SyntaxAnalyzer {
 			}
 			else{
 				addToParseTree();
-				Compiler.Lexer.getNextToken();
-				if(!((Compiler.currentToken).equals(""))){
-					throw new CompilerException("SYNTAX ERROR - No code should be found after the document end tag!!! '" + Compiler.currentToken + "' was found.");
-				}
-				else{
-					Compiler.SemanticAna.createHtml();
-				}
+				Compiler.SemanticAna.createHtml();
 			}
 		} catch(CompilerException e) {
 			e.printStackTrace();
@@ -118,6 +112,7 @@ public class MySynAnalyzer implements SyntaxAnalyzer {
 				newline();
 				body();
 			}
+			else if((new Hash_End()).isLegal(Compiler.currentToken));
 			else{
 				throw new CompilerException("SYNTAX ERROR - No legal syntax was found. '" + Compiler.currentToken + "' was found.");
 			}
@@ -136,7 +131,9 @@ public class MySynAnalyzer implements SyntaxAnalyzer {
 				addToParseTree();
 				Compiler.Lexer.getNextToken();
 			}
-			variableDefine();
+			if((new Var_Def()).isLegal(Compiler.currentToken)){
+				variableDefine();
+			}
 			innerText();
 			if (!(new Curly_Close()).isLegal(Compiler.currentToken)){
 				throw new CompilerException("SYNTAX ERROR - A paragraph end tag was expected when '" + Compiler.currentToken + "' was found.");
@@ -373,6 +370,10 @@ public class MySynAnalyzer implements SyntaxAnalyzer {
 			else if((new Text()).isLegal(Compiler.currentToken)){
 				addToParseTree();
 				Compiler.Lexer.getNextToken();
+				innerItem();
+			}
+			else if((new Var_Use()).isLegal(Compiler.currentToken)){
+				variableUse();
 				innerItem();
 			}
 		} catch(CompilerException e) {

@@ -20,6 +20,9 @@ public class MySemAnalyzer {
 	
 	private void createHtmlStack(){
 		while(!(myStack.isEmpty())){
+			System.out.println(myStack.pop());
+		}
+		while(!myStack.isEmpty()){
 			t = new Stack<String>();
 			if((t.pop()).equalsIgnoreCase("<")){
 				
@@ -91,7 +94,7 @@ public class MySemAnalyzer {
 		 */
 	}
 	
-	//passed a backwards stack and as stack is popped off it is  concatinated into a string
+	//passed a backwards stack and as stack is popped off it is  concatenated into a string
 	public void createHtml(){
 		createHtmlStack();
 		String temp = t.pop();
