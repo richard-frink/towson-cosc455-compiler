@@ -55,6 +55,7 @@ public class MySemAnalyzer {
 				boolean exists = false;
 				while(!htmlStack.isEmpty()){
 					String element = htmlStack.pop();
+					t.push(element);
 					if(element.equalsIgnoreCase((new Carrot()).getHTML(false))){
 						exists = true;
 						break;
@@ -87,6 +88,7 @@ public class MySemAnalyzer {
 				boolean exists = false;
 				while(!htmlStack.isEmpty()){
 					String element = htmlStack.pop();
+					t.push(element);
 					if(element.equalsIgnoreCase((new Italic()).getHTML(false))){
 						exists = true;
 						break;
@@ -107,6 +109,7 @@ public class MySemAnalyzer {
 				boolean exists = false;
 				while(!htmlStack.isEmpty()){
 					String element = htmlStack.pop();
+					t.push(element);
 					if(element.equalsIgnoreCase((new Bold()).getHTML(false))){
 						exists = true;
 						break;
@@ -163,35 +166,41 @@ public class MySemAnalyzer {
 		String var_def = "";
 		t = new Stack<String>();
 		while(!myStack.isEmpty()){
+			System.out.println(myStack.peek());
 			String check = trimString(myStack.pop());
-				if(check.equalsIgnoreCase("$end")){
-					String temp_var_def = trimString(myStack.pop());
-					check = myStack.pop();
-					if(check.equalsIgnoreCase("=")){
-						String temp_name = trimString(myStack.pop());
-						if(temp_name.equalsIgnoreCase(var_name)){
-							var_def = temp_var_def;
-							myStack.pop();
-							break;
-						}
-						else{
-							t.push("$end");
-							t.push(temp_var_def);
-							t.push("=");
-							t.push(temp_name);
-							t.push(myStack.pop());
-						}
+			if(check.equalsIgnoreCase("$end")){
+				String temp_var_def = trimString(myStack.pop());
+				System.out.println("\n" + temp_var_def + "\n");
+				check = myStack.pop();
+				if(check.equalsIgnoreCase("=")){
+					String temp_name = trimString(myStack.pop());
+					if(temp_name.equalsIgnoreCase(var_name)){
+						var_def = temp_var_def;
+						myStack.pop();
+						break;
 					}
-					else if(check.equalsIgnoreCase("$use")){
-						if(!temp_var_def.equalsIgnoreCase(var_name)){
-							t.push("$end");
-						}
+					else{
+						t.push("$end");
 						t.push(temp_var_def);
-						t.push("$use");
+						t.push("=");
+						t.push(temp_name);
+						t.push(myStack.pop());
+					}
+				}
+				else if(check.equalsIgnoreCase("$use")){
+					if(!temp_var_def.equalsIgnoreCase(var_name)){
+						t.push("$end");
+					}
+					t.push(temp_var_def);
+					t.push("$use");
 				}
 				else{
 					t.push(check);
 				}
+			}
+			else if(check.equalsIgnoreCase("$use"));
+			else{
+				t.push(check);
 			}
 		}
 		try{
@@ -231,7 +240,7 @@ public class MySemAnalyzer {
 	
 	private String trimString(String needsTrim){
 		String trimmed = "";
-		for(int i = 0; i < needsTrim.length(); i++){
+		for(int i = 0; i < needsTrim.length() - 1; i++){
 			if(!(needsTrim.charAt(i) == ' ')){
 				trimmed = trimmed + needsTrim.charAt(i);
 			}
