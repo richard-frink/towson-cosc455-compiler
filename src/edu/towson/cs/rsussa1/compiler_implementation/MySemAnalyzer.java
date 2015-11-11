@@ -3,6 +3,8 @@ package edu.towson.cs.rsussa1.compiler_implementation;
 /**
  * COSC455 - Programming Languages and Implementation
  * 
+ * Checks for static semantic errors and replaces all necessary links with their given html definitions
+ * 
  * Richard Sussan
  */
 
@@ -20,6 +22,12 @@ public class MySemAnalyzer {
 	private static Stack<String> htmlStack = new Stack<String>();
 	private static Stack<String> t;
 	
+	/**
+	 * creates the actual html content that is written to file
+	 * 
+	 * then calls the file writer
+	 * 
+	 */
 	public void createHtml(){
 		createHtmlStack();
 		
@@ -34,10 +42,19 @@ public class MySemAnalyzer {
 		createNewFile(temp);		
 	}
 	
+	/**
+	 * this is called by the syntax analyzer to statically access the stack in this class
+	 * 
+	 */
 	public void addToStack(String str){
 		myStack.push(str);
 	}
 	
+	/**
+	 * translates the 'myStack' object's contents to their appropriate html definition based on each individual token
+	 * that is found when traversing the stack
+	 * 
+	 */
 	private void createHtmlStack(){
 		while(!myStack.isEmpty()){
 			String temp = myStack.pop();
@@ -159,6 +176,11 @@ public class MySemAnalyzer {
 		}
 	}
 	
+	/**
+	 * this method is called to (as stated) replace all variables with their respective definitions
+	 * by using tons of temporary variables
+	 * 
+	 */
 	private void replaceVariables(String var_name){
 		String var_def = "";
 		t = new Stack<String>();
@@ -235,6 +257,11 @@ public class MySemAnalyzer {
 		}
 	}
 	
+	/**
+	 * takes a String and gets rid of all of the possible spaces that it has in it, this is needed
+	 * for the 'replaceVariables' method when it comes to comparing variable names
+	 * 
+	 */
 	private String trimString(String needsTrim){
 		String trimmed = "";
 		for(int i = 0; i < needsTrim.length(); i++){
@@ -245,6 +272,11 @@ public class MySemAnalyzer {
 		return trimmed;
 	}
 	
+	/**
+	 * takes a String as input and creates an html file, the given string is then written to this html file
+	 * the method then calls the method to open the file in the google chrome web browser
+	 * 
+	 */
 	public void createNewFile(String sourceFile){
 		try {
 			String temp = Compiler.file + ".html";
@@ -265,6 +297,7 @@ public class MySemAnalyzer {
 		}
 	}
 	
+	//displays the html file made in the google chrome browser
 	public void openHTMLFileInBrowser(String htmlFileStr){
 		File file= new File(htmlFileStr.trim());
 		if(!file.exists()){

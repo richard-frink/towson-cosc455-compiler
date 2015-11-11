@@ -3,6 +3,8 @@ package edu.towson.cs.rsussa1.compiler_implementation;
 /**
  * COSC455 - Programming Languages and Implementation
  * 
+ * Syntax analyzer class for the given HTML Markdown grammar
+ * 
  * Richard Sussan
  */
 
@@ -13,6 +15,13 @@ import edu.towson.cs.rsussa1.compiler_implementation.Compiler;
 import edu.towson.cosc.cosc455.interfaces.*;
 
 public class MySynAnalyzer implements SyntaxAnalyzer {
+	
+	/**
+	 * fully implements all of the provided HTML markdown grammer by checking a token and then retrieving new tokens,
+	 * and where the grammar is not followed then an error is thrown with a good description as to why
+	 * the grammar was incorrect
+	 * 
+	 */
 	
 	@Override
 	public void markdown() throws CMMException {
@@ -517,6 +526,7 @@ public class MySynAnalyzer implements SyntaxAnalyzer {
 		}
 	}
 
+	//adds legal tokens to the parse tree in the semantic analyzer
 	public void addToParseTree(){
 		Compiler.SemanticAna.addToStack(Compiler.currentToken);
 	}

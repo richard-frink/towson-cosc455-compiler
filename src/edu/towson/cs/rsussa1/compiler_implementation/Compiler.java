@@ -16,6 +16,14 @@ public class Compiler {
 	public static String file = "";
 	public static String filePath = "";
 	
+	/**
+	 * initially checks that the given file extension is correct, if it is not then an error is thrown...
+	 * if not however, then the lexer retrieves it's first token, which is kept in this class for easy access
+	 * then the syntax analyzer drives the rest of the program
+	 * 
+	 * @param args
+	 * @throws IOException
+	 */
 	public static void main(String[] args) throws IOException{
 		Lexer = new MyLexAnalyzer();
 		Parser = new MySynAnalyzer();
@@ -46,8 +54,6 @@ public class Compiler {
 			
 			Lexer.start(temp);
 			Parser.markdown();
-			
-			
 			
 			fr.close();
 		}
